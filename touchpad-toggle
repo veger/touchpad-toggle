@@ -1,0 +1,32 @@
+#!/bin/bash
+
+while ! timeout 1s xset q &>/dev/null
+do
+    echo "Waiting for X server at \$DISPLAY [$DISPLAY]" >&2
+    sleep 5
+done
+
+declare -i ID
+ID=$(xinput list | grep -Eio '(touchpad|glidepoint)\s*id=[0-9]{1,2}' | grep -Eo '[0-9]{1,2}')
+
+declare -i STATE
+case "$1" in
+    enable)
+        STATE=0
+	;;
+    disable)
+	STATE=1
+	;;
+    *)
+        STATE=$(xinput list-props "$ID" | grep 'Device Enabled' | awk '{print $4}')
+	;;
+esac
+
+if [ "$STATE" -eq 1 ]
+then
+    xinput disable "$ID"
+    echo "Touchpad disabled."
+else
+    xinput enable "$ID"
+    echo "Touchpad enabled."
+fi

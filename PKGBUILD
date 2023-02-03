@@ -13,12 +13,12 @@ depends=('xorg-xinput')
 provides=('touchpad-toggle')
 
 source=('touchpad-toggle'
-    '01-touchpad-toggle.rules')
+    '70-touchpad-toggle.rules')
 
 sha256sums=('4c0e1836752d972e990c8cffc18a527c9d6991dcd5bf58e52835589dd71bffc2'
     'c25f809be0a568be18609e5503e93ed4fb20f2d82f5a73bb4a229d3e44a22515')
 
 package() {
   install -Dm755 "${srcdir}/touchpad-toggle" "$pkgdir/usr/bin/touchpad-toggle"
-  install -Dm644 "${srcdir}/01-touchpad-toggle.rules" "$pkgdir/usr/lib/udev/rules.d/01-touchpad-toggle.rules"
+  install -Dm644 "${srcdir}/70-touchpad-toggle.rules" "$pkgdir/usr/lib/udev/rules.d/70-touchpad-toggle.rules"
 }

@@ -1,4 +1,4 @@
-# Disable touchpad when an USB mouse is plugged in
+# Disable touchpad when an USB or bluetooth mouse is plugged in
 #
-KERNEL=="mouse[0-9]*", SUBSYSTEM=="input", ACTION=="add", SUBSYSTEMS=="usb", ATTRS{product}=="Optical USB Mouse", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/veger/.Xauthority", ENV{DBUS_SESSION_BUS_ADDRESS}="unix:path=/run/user/1000/bus", RUN+="/usr/bin/su veger -c 'systemd-cat -p info /usr/bin/touchpad-toggle disable'"
-KERNEL=="mouse[0-9]*", SUBSYSTEM=="input", ACTION=="remove", SUBSYSTEMS=="usb", ATTRS{product}=="Optical USB Mouse", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/veger/.Xauthority", ENV{DBUS_SESSION_BUS_ADDRESS}="unix:path=/run/user/1000/bus", RUN+="/usr/bin/su veger -c 'systemd-cat -p info /usr/bin/touchpad-toggle enable'"
+SUBSYSTEM=="input", ACTION=="add", ENV{ID_INPUT_MOUSE}=="1", ENV{ID_BUS}=="bluetooth|usb", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/veger/.Xauthority", ENV{DBUS_SESSION_BUS_ADDRESS}="unix:path=/run/user/1000/bus", RUN+="/usr/bin/su veger -c 'systemd-cat -p info /usr/bin/touchpad-toggle disable'"
+SUBSYSTEM=="input", ACTION=="remove", ENV{ID_INPUT_MOUSE}=="1", ENV{ID_BUS}=="bluetooth|usb", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/veger/.Xauthority", ENV{DBUS_SESSION_BUS_ADDRESS}="unix:path=/run/user/1000/bus", RUN+="/usr/bin/su veger -c 'systemd-cat -p info /usr/bin/touchpad-toggle enable'"

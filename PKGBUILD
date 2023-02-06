@@ -3,7 +3,7 @@
 #
 
 pkgname=touchpad-toggle
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="Disables touchpad when USB mouse is detected, and enables when unplugged again"
 arch=('i686' 'x86_64')
@@ -16,7 +16,7 @@ source=('touchpad-toggle'
     '70-touchpad-toggle.rules')
 
 sha256sums=('4c0e1836752d972e990c8cffc18a527c9d6991dcd5bf58e52835589dd71bffc2'
-    'c25f809be0a568be18609e5503e93ed4fb20f2d82f5a73bb4a229d3e44a22515')
+    '4d1d1cf5d9be87a83370a1551806b00a01471c037761e5c8dfd4aa75e976fa9e')
 
 package() {
   install -Dm755 "${srcdir}/touchpad-toggle" "$pkgdir/usr/bin/touchpad-toggle"

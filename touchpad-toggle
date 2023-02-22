@@ -6,6 +6,11 @@ do
     sleep 5
 done
 
+if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+	echo "Wayland properly disables the touchpad while typing, so no need to toggle."
+	exit 0
+fi
+
 declare -i ID
 ID=$(xinput list | grep -Eio '(touchpad|glidepoint)\s*id=[0-9]{1,2}' | grep -Eo '[0-9]{1,2}' || echo -1 )
 if [ "$ID" -eq -1 ]; then

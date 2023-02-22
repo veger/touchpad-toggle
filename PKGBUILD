@@ -3,7 +3,7 @@
 #
 
 pkgname=touchpad-toggle
-pkgver=0.1.1
+pkgver=0.1.2
 pkgrel=1
 pkgdesc="Disables touchpad when USB mouse is detected, and enables when unplugged again"
 arch=('i686' 'x86_64')
@@ -15,7 +15,7 @@ provides=('touchpad-toggle')
 source=('touchpad-toggle'
     '70-touchpad-toggle.rules')
 
-sha256sums=('4c0e1836752d972e990c8cffc18a527c9d6991dcd5bf58e52835589dd71bffc2'
+sha256sums=('9ed6208cb6afc382b9fb16047c1539a892fad3384800644781b69506b330585a'
     '4d1d1cf5d9be87a83370a1551806b00a01471c037761e5c8dfd4aa75e976fa9e')
 
 package() {

@@ -1,14 +1,29 @@
 #!/bin/bash
 
-while ! timeout 1s xset q &>/dev/null
-do
-    echo "Waiting for X server at \$DISPLAY [$DISPLAY]" >&2
-    sleep 5
-done
-
 if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
 	echo "Wayland properly disables the touchpad while typing, so no need to toggle."
 	exit 0
+fi
+
+for i in {1..6}; do
+    if [[ "$(systemctl is-system-running || true)" != "running" ]]; then
+	    echo "System is not running"
+	    exit 0
+    fi
+
+    timeout 0.5s xset q &>/dev/null
+    if [ $? -eq 0 ]; then
+	    break
+    fi
+
+    sleep 1
+    echo "Waited 5s for X server at \$DISPLAY [$DISPLAY]" >&2
+done
+
+if [ $i -ge 5 ]; then
+    echo "Failed waiting for X server"
+    timeout 5s xset q
+    exit 1
 fi
 
 declare -i ID

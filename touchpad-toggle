@@ -1,56 +1,55 @@
 #!/bin/bash
 
-if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
-	echo "Wayland properly disables the touchpad while typing, so no need to toggle."
-	exit 0
-fi
+set -e
 
-for i in {1..6}; do
-    if [[ "$(systemctl is-system-running || true)" != "running" ]]; then
-	    echo "System is not running"
-	    exit 0
-    fi
+SERVICE="org.kde.KWin"
+DBUS_PATH="/org/kde/KWin/InputDevice"
+INTERFACE="org.kde.KWin.InputDevice"
+METHOD_GET="org.freedesktop.DBus.Properties.Get"
+METHOD_SET="org.freedesktop.DBus.Properties.Set"
 
-    timeout 0.5s xset q &>/dev/null
-    if [ $? -eq 0 ]; then
-	    break
-    fi
+function find_touchpad {
+    DM_INTERFACE="org.kde.KWin.InputDeviceManager"
+    DM_PROPERTY="devicesSysNames"
 
-    sleep 1
-    echo "Waited 5s for X server at \$DISPLAY [$DISPLAY]" >&2
-done
+    for sysname in $(qdbus6 "$SERVICE" "$DBUS_PATH" "$METHOD_GET" "$DM_INTERFACE" "$DM_PROPERTY"); do
+        is_touchpad=$(qdbus6 "$SERVICE" "${DBUS_PATH}/${sysname}" "$METHOD_GET" "$INTERFACE" touchpad)
 
-if [ $i -ge 5 ]; then
-    echo "Failed waiting for X server"
-    timeout 5s xset q
+        if [ "$is_touchpad" == "true" ]; then
+            echo "$sysname"
+            return
+        fi
+    done
+
+    >&2 echo "Touchpad not found"
     exit 1
-fi
+}
 
-declare -i ID
-ID=$(xinput list | grep -Eio '(touchpad|glidepoint)\s*id=[0-9]{1,2}' | grep -Eo '[0-9]{1,2}' || echo -1 )
-if [ "$ID" -eq -1 ]; then
-	echo No touchpad found
-	exit 1
-fi
+DBUS_PATH="${DBUS_PATH}/$(find_touchpad)"
+PROPERTY="enabled"
 
-declare -i STATE
+#declare -i STATE
 case "$1" in
     enable)
-        STATE=0
+        STATE="true"
 	;;
     disable)
-	STATE=1
+	STATE="false"
 	;;
     *)
-        STATE=$(xinput list-props "$ID" | grep 'Device Enabled' | awk '{print $4}')
+        # Get the current status of the touchpad
+        STATE=$(qdbus6 "$SERVICE" "$DBUS_PATH" "$METHOD_GET" "$INTERFACE" "$PROPERTY")
+
+        # Flip the status
+        STATE=$([[ "$STATE" == "false" ]] && echo true || echo false)
 	;;
 esac
 
-if [ "$STATE" -eq 1 ]
+qdbus6 "$SERVICE" "$DBUS_PATH" "$METHOD_SET" "$INTERFACE" "$PROPERTY" "$STATE"
+
+if [[ "$STATE" == "false" ]]
 then
-    xinput disable "$ID"
     echo "Touchpad disabled."
 else
-    xinput enable "$ID"
     echo "Touchpad enabled."
 fi
